@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: cooperativa
+  datasource:
+    url: jdbc:mysql://localhost:3306/cooperativa
+    username: cooperativa
+    password: cooperativa
+    dbcp2:
+      test-while-idle: true
+      validation-query: SELECT 1
+      driver-class-name: org.mysql.jdbc.Driver
+    jpa:
+      show-sql: true
+      hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
