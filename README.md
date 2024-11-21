@@ -108,3 +108,21 @@ A API usa códigos de status HTTP padrão para indicar sucesso ou falha. Erros d
 #### (Serviço Externo de Validação de CPF - não detalhado aqui conforme as instruções do prompt.)
 
 Esta documentação fornece uma visão geral completa da API Cooperativa. Ela detalha os endpoints disponíveis, os formatos de solicitação e resposta e a integração com o Kafka. Essas informações devem permitir que os desenvolvedores integrem e utilizem a API de forma eficaz.
+
+## Observações Gerais
+
+Para subir a aplicação com o Docker Compose que está dentro da pasta "docker", siga os passos:
+#### Abra o terminal:
+Navegue até o diretório raiz do seu projeto, onde a pasta "docker" está localizada.
+#### Acesse a pasta "docker":
+Use o comando cd docker para entrar na pasta que contém o arquivo docker-compose.yml.
+#### Suba os serviços:
+Execute o comando docker-compose up -d. A flag -d inicia os contêineres em modo detached (desacoplado/background) ,  permitindo que você continue usando o terminal.
+#### Verifique o status:
+Após alguns instantes, use docker-compose ps para verificar se todos os serviços estão em execução e se as portas estão mapeadas corretamente.
+
+#### Caso ocorra algum erro para subir o banco mysql, execute o comando abaixo no terminal:
+
+```
+docker run --detach --name cooperativa -p 3306:3306  -e MYSQL_USER=cooperativa -e MYSQL_PASSWORD=cooperativa -e  MYSQL_ROOT_PASSWORD=123456 -e MYSQL_DATABASE=cooperativa mysql:8.1
+```
