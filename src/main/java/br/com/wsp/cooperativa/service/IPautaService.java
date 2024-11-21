@@ -10,5 +10,5 @@ public interface IPautaService {
 
     PautaResponse save(PautaRequest pautaRequest);
 
-    List<Pauta> findALl();
+    List<Pauta> findAll();
 }

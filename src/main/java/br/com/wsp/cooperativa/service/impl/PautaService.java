@@ -37,7 +37,7 @@ public class PautaService implements IPautaService {
     }
 
     @Override
-    public List<Pauta> findALl() {
+    public List<Pauta> findAll() {
 
         log.info("BUSCANDO TODAS AS PAUTAS");
         return repository.findAll();

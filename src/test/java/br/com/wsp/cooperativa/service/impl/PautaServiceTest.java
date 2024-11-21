@@ -48,7 +48,7 @@ class PautaServiceTest {
 
         doReturn(List.of(pauta)).when(repository).findAll();
 
-        List<Pauta> result = service.findALl();
+        List<Pauta> result = service.findAll();
 
         assertNotNull(result);
 

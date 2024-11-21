@@ -32,4 +32,6 @@ public class Sessao implements Serializable {
 
     @Column(name = "created_at")
     private Timestamp createdAt;
+
+    private Boolean encerrada;
 }

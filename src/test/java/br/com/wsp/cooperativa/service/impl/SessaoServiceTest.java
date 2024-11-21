@@ -40,7 +40,7 @@ class SessaoServiceTest {
     @BeforeEach
     void setUp() {
 
-        sessao = new Sessao(1L, new Pauta(), Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
+        sessao = new Sessao(1L, new Pauta(), Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()), Boolean.FALSE);
 
     }
 

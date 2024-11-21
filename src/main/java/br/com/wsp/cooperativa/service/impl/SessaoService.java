@@ -1,11 +1,13 @@
 package br.com.wsp.cooperativa.service.impl;
 
 import br.com.wsp.cooperativa.dto.SessaoResponse;
+import br.com.wsp.cooperativa.dto.VotacaoResultado;
 import br.com.wsp.cooperativa.exception.NotFoundException;
 import br.com.wsp.cooperativa.model.Sessao;
 import br.com.wsp.cooperativa.repository.PautaRepository;
 import br.com.wsp.cooperativa.repository.SessaoRepository;
 import br.com.wsp.cooperativa.service.ISessaoService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,13 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 @AllArgsConstructor
+@Transactional
 public class SessaoService implements ISessaoService {
 
     private final SessaoRepository sessaoRepository;
     private final PautaRepository pautaRepository;
-
+    private final KafkaProducer kafkaProducer;
+    private final VotacaoService votacaoService;
 
     @Override
     public SessaoResponse abrirSessao(Long pautaId, Long duration) {
@@ -41,5 +45,31 @@ public class SessaoService implements ISessaoService {
         log.info("SESSION SAVED: " + session.toString());
 
         return new SessaoResponse(saved.getId(), saved.getPauta().getId(), saved.getDateStart(), saved.getDateEnd(), saved.getCreatedAt());
+    }
+
+    @Override
+    public void fecharSessao(Long sessaoId) {
+
+        Sessao sessao = sessaoRepository.findById(sessaoId)
+                .orElseThrow(() -> new NotFoundException("Sessão não encontrada"));
+
+        if (Boolean.TRUE.equals(sessao.getEncerrada())) {
+            throw new IllegalStateException("Sessão já está encerrada");
+        }
+
+        sessao.setEncerrada(true);
+        sessaoRepository.save(sessao);
+
+        VotacaoResultado votacaoResultado = votacaoService.resultadoVotacao(sessaoId);
+
+        String mensagem = String.format(
+                "Sessão: %d | Votos Totais: %d | SIM: %d | NÃO: %d",
+                votacaoResultado.getSessaoId(),
+                votacaoResultado.getTotalVotos(),
+                votacaoResultado.getVotosAceitos(),
+                votacaoResultado.getVotosNegados()
+        );
+
+        kafkaProducer.sendMessage(mensagem);
     }
 }
