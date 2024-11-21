@@ -58,15 +58,15 @@ public class VotacaoService implements IVotacaoService {
         return new VotacaoResponse(voteSaved.getId(), voteSaved.getSessao().getPauta().getTitulo(), voteSaved.getSessao().getPauta().getDescricao(), voteSaved.getAssociadoId(), voteSaved.getVote(), voteSaved.getCreatedAt());
     }
 
-//    private void validaCpf(VotacaoRequest votacaoRequest) {
-//
-//        log.info("VALIDANDO CPF DO ASSOCIADO: " + votacaoRequest.associadoId());
-//        String cpfStatus = cpfValidadorService.validaCpf(votacaoRequest.associadoId());
-//
-//        if ("UNABLE_TO_VOTE".equals(cpfStatus)) {
-//            throw new IllegalStateException("O associado não está apto a votar");
-//        }
-//    }
+    private void validaCpf(VotacaoRequest votacaoRequest) {
+
+        log.info("VALIDANDO CPF DO ASSOCIADO: " + votacaoRequest.associadoId());
+        String cpfStatus = cpfValidadorService.validaCpf(votacaoRequest.associadoId());
+
+        if ("UNABLE_TO_VOTE".equals(cpfStatus)) {
+            throw new IllegalStateException("O associado não está apto a votar");
+        }
+    }
 
     private void validaSessao(Sessao session) {
 
