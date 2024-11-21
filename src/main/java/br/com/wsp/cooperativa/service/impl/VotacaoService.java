@@ -26,9 +26,12 @@ public class VotacaoService implements IVotacaoService {
 
     private final VotacaoRepository repository;
     private final SessaoRepository sessaoRepository;
+    private final CpfValidadorService cpfValidadorService;
 
     @Override
     public VotacaoResponse vote(VotacaoRequest votacaoRequest) {
+
+//        validaCpf(votacaoRequest);
 
         log.info("BUSCANDO SE EXISTE VOTACAO COM A SESSAO: " + votacaoRequest.sessaoId() + " E ASSOCIADO:" + votacaoRequest.associadoId());
         repository.existsBySessionIdAndAssociatedId(votacaoRequest.sessaoId(), votacaoRequest.associadoId()).ifPresent(v -> {
@@ -39,7 +42,7 @@ public class VotacaoService implements IVotacaoService {
         Sessao session = sessaoRepository.findById(votacaoRequest.sessaoId()).orElseThrow(() -> new NotFoundException("SESSAO " + votacaoRequest.sessaoId() + " NAO ENCONTRADA"));
         log.info("SESSAO: " + session.toString());
 
-        validateSession(session);
+        validaSessao(session);
 
         Votacao newVote = Votacao.builder()
                 .sessao(session)
@@ -55,7 +58,17 @@ public class VotacaoService implements IVotacaoService {
         return new VotacaoResponse(voteSaved.getId(), voteSaved.getSessao().getPauta().getTitulo(), voteSaved.getSessao().getPauta().getDescricao(), voteSaved.getAssociadoId(), voteSaved.getVote(), voteSaved.getCreatedAt());
     }
 
-    private void validateSession(Sessao session) {
+//    private void validaCpf(VotacaoRequest votacaoRequest) {
+//
+//        log.info("VALIDANDO CPF DO ASSOCIADO: " + votacaoRequest.associadoId());
+//        String cpfStatus = cpfValidadorService.validaCpf(votacaoRequest.associadoId());
+//
+//        if ("UNABLE_TO_VOTE".equals(cpfStatus)) {
+//            throw new IllegalStateException("O associado não está apto a votar");
+//        }
+//    }
+
+    private void validaSessao(Sessao session) {
 
         if (LocalDateTime.now().isAfter(session.getDateEnd().toLocalDateTime())) {
 
