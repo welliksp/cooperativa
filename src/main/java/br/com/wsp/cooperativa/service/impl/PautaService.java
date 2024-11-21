@@ -3,7 +3,7 @@ package br.com.wsp.cooperativa.service.impl;
 import br.com.wsp.cooperativa.dto.PautaRequest;
 import br.com.wsp.cooperativa.dto.PautaResponse;
 import br.com.wsp.cooperativa.model.Pauta;
-import br.com.wsp.cooperativa.repository.RulingRepository;
+import br.com.wsp.cooperativa.repository.PautaRepository;
 import br.com.wsp.cooperativa.service.IPautaService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PautaService implements IPautaService {
 
-    private final RulingRepository repository;
+    private final PautaRepository repository;
 
     @Override
     public PautaResponse save(PautaRequest pautaRequest) {

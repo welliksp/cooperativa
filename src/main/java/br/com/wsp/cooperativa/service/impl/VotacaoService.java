@@ -2,13 +2,14 @@ package br.com.wsp.cooperativa.service.impl;
 
 import br.com.wsp.cooperativa.dto.VotacaoRequest;
 import br.com.wsp.cooperativa.dto.VotacaoResponse;
+import br.com.wsp.cooperativa.dto.VotacaoResultado;
 import br.com.wsp.cooperativa.exception.NotFoundException;
 import br.com.wsp.cooperativa.exception.TimeExpiredException;
 import br.com.wsp.cooperativa.exception.VoteFoundException;
 import br.com.wsp.cooperativa.model.Sessao;
 import br.com.wsp.cooperativa.model.Votacao;
 import br.com.wsp.cooperativa.model.enums.VoteEnum;
-import br.com.wsp.cooperativa.repository.SessionRepository;
+import br.com.wsp.cooperativa.repository.SessaoRepository;
 import br.com.wsp.cooperativa.repository.VotacaoRepository;
 import br.com.wsp.cooperativa.service.IVotacaoService;
 import lombok.AllArgsConstructor;
@@ -24,19 +25,18 @@ import java.time.LocalDateTime;
 public class VotacaoService implements IVotacaoService {
 
     private final VotacaoRepository repository;
-    private final SessionRepository sessionRepository;
+    private final SessaoRepository sessaoRepository;
 
     @Override
     public VotacaoResponse vote(VotacaoRequest votacaoRequest) {
 
         log.info("BUSCANDO SE EXISTE VOTACAO COM A SESSAO: " + votacaoRequest.sessaoId() + " E ASSOCIADO:" + votacaoRequest.associadoId());
-
         repository.existsBySessionIdAndAssociatedId(votacaoRequest.sessaoId(), votacaoRequest.associadoId()).ifPresent(v -> {
             throw new VoteFoundException("JÁ EXISTE UMA VOTACAO");
         });
 
         log.info("BUSCANDO SESSAO PELO ID: " + votacaoRequest.sessaoId());
-        Sessao session = sessionRepository.findById(votacaoRequest.sessaoId()).orElseThrow(() -> new NotFoundException("SESSAO " + votacaoRequest.sessaoId() + " NAO ENCONTRADA"));
+        Sessao session = sessaoRepository.findById(votacaoRequest.sessaoId()).orElseThrow(() -> new NotFoundException("SESSAO " + votacaoRequest.sessaoId() + " NAO ENCONTRADA"));
         log.info("SESSAO: " + session.toString());
 
         validateSession(session);
@@ -44,7 +44,7 @@ public class VotacaoService implements IVotacaoService {
         Votacao newVote = Votacao.builder()
                 .sessao(session)
                 .associadoId(votacaoRequest.associadoId())
-                .vote(VoteEnum.NAO.equals(votacaoRequest.vote()) ? VoteEnum.NAO : VoteEnum.SIM)
+                .vote(VoteEnum.NAO.toString().equals(votacaoRequest.vote()) ? VoteEnum.NAO : VoteEnum.SIM)
                 .createdAt(Timestamp.valueOf(LocalDateTime.now()))
                 .build();
 
@@ -61,5 +61,10 @@ public class VotacaoService implements IVotacaoService {
 
             throw new TimeExpiredException("TEMPO PARA VOTAR EXPIRADO");
         }
+    }
+
+    @Override
+    public VotacaoResultado resultadoVotacao(Long sessaoId) {
+        return repository.calculaResultadoVotacao(sessaoId);
     }
 }
